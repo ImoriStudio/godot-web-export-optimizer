@@ -1,0 +1,906 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Web Export Optimizer Guide</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+  :root {
+    --page-bg: #eef0f4;
+    --page-surface: #ffffff;
+    --page-surface-2: #f6f7fa;
+    --page-text: #171a21;
+    --page-text-muted: #5b6472;
+    --page-border: #dde1e7;
+    --accent: #e0722a;
+    --accent-ink: #8a3f10;
+    --accent-soft: #fdece0;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --page-bg: #0e1015;
+      --page-surface: #171a21;
+      --page-surface-2: #1d2129;
+      --page-text: #edeff3;
+      --page-text-muted: #9aa2b1;
+      --page-border: #2a2e38;
+      --accent: #ff9a52;
+      --accent-ink: #ffd9b8;
+      --accent-soft: #3a2416;
+    }
+  }
+  :root[data-theme="dark"] {
+    --page-bg: #0e1015;
+    --page-surface: #171a21;
+    --page-surface-2: #1d2129;
+    --page-text: #edeff3;
+    --page-text-muted: #9aa2b1;
+    --page-border: #2a2e38;
+    --accent: #ff9a52;
+    --accent-ink: #ffd9b8;
+    --accent-soft: #3a2416;
+  }
+
+  /* Editor mockup: fixed dark world regardless of page theme */
+  :root {
+    --ed-bg: #1b1c26;
+    --ed-panel: #22232f;
+    --ed-panel-2: #292a38;
+    --ed-panel-3: #2f3140;
+    --ed-border: #3b3d4d;
+    --ed-text: #d7d9e2;
+    --ed-text-dim: #82859a;
+    --ed-blue: #5b9fd8;
+    --ed-canvas: #14151d;
+    --ed-canvas-line: #23252f;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { height: auto; }
+
+  body {
+    margin: 0;
+    background: var(--page-bg);
+    color: var(--page-text);
+    font-family: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  [hidden] { display: none !important; }
+
+  a { color: inherit; }
+
+  .topbar {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    display: flex;
+    justify-content: flex-end;
+    padding: 14px 24px;
+    background: linear-gradient(var(--page-bg) 70%, transparent);
+  }
+
+  .lang-toggle {
+    display: inline-flex;
+    border: 1px solid var(--page-border);
+    border-radius: 999px;
+    background: var(--page-surface);
+    padding: 3px;
+    gap: 2px;
+  }
+  .lang-toggle button {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 0.74rem;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    border: none;
+    background: transparent;
+    color: var(--page-text-muted);
+    padding: 5px 12px;
+    border-radius: 999px;
+    cursor: pointer;
+  }
+  .lang-toggle button.active {
+    background: var(--accent);
+    color: #1b0e04;
+  }
+  .lang-toggle button:focus-visible,
+  .btn:focus-visible,
+  a:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  .wrap {
+    max-width: 920px;
+    margin: 0 auto;
+    padding: 8px 24px 96px;
+  }
+
+  .eyebrow {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 0.78rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 600;
+    margin: 0 0 14px;
+  }
+
+  h1 {
+    font-size: clamp(1.75rem, 1.35rem + 1.6vw, 2.4rem);
+    font-weight: 700;
+    letter-spacing: -0.015em;
+    margin: 0 0 16px;
+    text-wrap: balance;
+  }
+
+  .lede {
+    font-size: 1.06rem;
+    color: var(--page-text-muted);
+    max-width: 62ch;
+    margin: 0;
+  }
+
+  h2 {
+    font-size: 1.28rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    margin: 0 0 6px;
+    text-wrap: balance;
+  }
+  h3 { text-wrap: balance; }
+
+  .section { margin-top: 68px; }
+
+  .section-head {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    margin-bottom: 8px;
+  }
+
+  .step-badge {
+    flex: none;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: #1b0e04;
+    font-family: "IBM Plex Mono", monospace;
+    font-weight: 600;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .section-sub {
+    color: var(--page-text-muted);
+    max-width: 66ch;
+    margin: 0 0 26px;
+    font-size: 0.98rem;
+  }
+
+  .path {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 0.88em;
+    background: var(--page-surface-2);
+    border: 1px solid var(--page-border);
+    padding: 0.1em 0.45em;
+    border-radius: 4px;
+    color: var(--page-text);
+  }
+
+  /* Settings dialog mock */
+  .settings-mock {
+    background: var(--page-surface);
+    border: 1px solid var(--page-border);
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+  }
+  .settings-titlebar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 14px;
+    background: var(--page-surface-2);
+    border-bottom: 1px solid var(--page-border);
+    font-size: 0.86rem;
+    color: var(--page-text-muted);
+    font-weight: 500;
+  }
+  .settings-titlebar .dots span {
+    display: inline-block;
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--page-border);
+    margin-right: 4px;
+  }
+  .settings-body { padding: 18px 20px 22px; }
+  .settings-tabs {
+    display: flex;
+    gap: 22px;
+    font-size: 0.86rem;
+    color: var(--page-text-muted);
+    border-bottom: 1px solid var(--page-border);
+    margin-bottom: 16px;
+    padding-bottom: 10px;
+    overflow-x: auto;
+  }
+  .settings-tabs .active {
+    color: var(--page-text);
+    font-weight: 600;
+    position: relative;
+  }
+  .settings-tabs .active::after {
+    content: "";
+    position: absolute;
+    left: 0; right: 0; bottom: -11px;
+    height: 2px;
+    background: var(--accent);
+  }
+  .plugin-row {
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    gap: 18px;
+    align-items: center;
+    padding: 12px 14px;
+    border: 1px solid var(--accent);
+    border-radius: 8px;
+    background: var(--accent-soft);
+    font-size: 0.9rem;
+  }
+  .plugin-row .name { font-weight: 600; }
+  .plugin-row .meta { color: var(--page-text-muted); font-family: "IBM Plex Mono", monospace; font-size: 0.78rem; }
+  .toggle {
+    width: 38px; height: 20px;
+    border-radius: 999px;
+    background: #2f8f4e;
+    position: relative;
+    flex: none;
+  }
+  .toggle::after {
+    content: "";
+    position: absolute;
+    top: 2px; right: 2px;
+    width: 16px; height: 16px;
+    border-radius: 50%;
+    background: #fff;
+  }
+
+  /* Annotation callouts */
+  .callout {
+    display: flex;
+    gap: 12px;
+    margin-top: 16px;
+    padding: 12px 14px;
+    border-left: 3px solid var(--accent);
+    background: var(--accent-soft);
+    border-radius: 0 8px 8px 0;
+    font-size: 0.92rem;
+  }
+  .callout .num {
+    font-family: "IBM Plex Mono", monospace;
+    font-weight: 700;
+    color: var(--accent-ink);
+    flex: none;
+  }
+  .callout p { margin: 0; color: var(--page-text); }
+
+  /* Godot editor mockup */
+  .editor-frame {
+    background: var(--ed-bg);
+    border: 1px solid var(--ed-border);
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.35);
+  }
+  .menubar {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    padding: 8px 14px;
+    background: var(--ed-panel);
+    border-bottom: 1px solid var(--ed-border);
+    font-size: 0.78rem;
+    color: var(--ed-text-dim);
+  }
+  .menubar .brand { color: var(--ed-text); font-weight: 600; margin-right: 6px; }
+  .menubar .spacer { flex: 1; }
+  .menubar .viewmode { display: flex; gap: 2px; background: var(--ed-bg); border-radius: 6px; padding: 2px; }
+  .menubar .viewmode span { padding: 3px 10px; border-radius: 4px; font-size: 0.74rem; }
+  .menubar .viewmode span.active { background: var(--ed-panel-3); color: var(--ed-text); }
+
+  .editor-body { display: grid; grid-template-columns: 150px 1fr 260px; min-height: 340px; }
+  .ed-col { border-right: 1px solid var(--ed-border); padding: 10px; }
+  .ed-col:last-child { border-right: none; }
+  .ed-dock-title { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--ed-text-dim); margin-bottom: 10px; }
+  .ed-fake-row { height: 9px; background: var(--ed-panel-2); border-radius: 3px; margin-bottom: 7px; width: 78%; }
+  .ed-fake-row:nth-child(odd) { width: 92%; }
+  .ed-viewport {
+    background:
+      linear-gradient(var(--ed-canvas-line) 1px, transparent 1px) 0 0/28px 28px,
+      linear-gradient(90deg, var(--ed-canvas-line) 1px, transparent 1px) 0 0/28px 28px,
+      var(--ed-canvas);
+    position: relative;
+  }
+  .ed-viewport::after {
+    content: "";
+    position: absolute;
+    left: 50%; top: 50%;
+    width: 46px; height: 46px;
+    transform: translate(-50%, -50%);
+    border: 1px dashed #454863;
+    border-radius: 6px;
+  }
+  .right-col { display: flex; flex-direction: column; padding: 0; }
+  .right-top, .right-bottom { padding: 10px; }
+  .right-top { border-bottom: 1px solid var(--ed-border); }
+  .right-bottom { flex: 1; position: relative; }
+  .tabstrip {
+    display: flex; gap: 2px; margin: -10px -10px 10px; padding: 6px 8px 0;
+    border-bottom: 1px solid var(--ed-border); font-size: 0.72rem; color: var(--ed-text-dim);
+  }
+  .tabstrip span { padding: 6px 9px; border-radius: 5px 5px 0 0; }
+  .tabstrip span.active { background: var(--ed-panel-2); color: var(--ed-text); font-weight: 500; }
+  .tabstrip span.ours { color: var(--accent); font-weight: 600; }
+  .highlight-ring { position: absolute; inset: -3px; border: 2px solid var(--accent); border-radius: 8px; pointer-events: none; }
+  .badge-2 {
+    position: absolute; top: -14px; right: -14px; width: 26px; height: 26px; border-radius: 50%;
+    background: var(--accent); color: #1b0e04; font-family: "IBM Plex Mono", monospace; font-weight: 700;
+    font-size: 0.82rem; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+  }
+  .rel { position: relative; }
+
+  /* Dock detail zoom */
+  .dock-zoom {
+    background: var(--ed-panel);
+    border: 1px solid var(--ed-border);
+    border-radius: 10px;
+    padding: 16px;
+    color: var(--ed-text);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.35);
+    overflow-x: auto;
+  }
+  .dock-header { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+  .btn {
+    font-family: "IBM Plex Sans", sans-serif;
+    font-size: 0.78rem;
+    padding: 6px 12px;
+    border-radius: 5px;
+    background: var(--ed-panel-3);
+    border: 1px solid var(--ed-border);
+    color: var(--ed-text);
+    cursor: default;
+  }
+  .btn.primary-outline { border-color: var(--ed-blue); color: var(--ed-blue); }
+  .status-line { font-size: 0.76rem; color: var(--ed-text-dim); margin-bottom: 18px; }
+  .dock-section-title { font-size: 0.8rem; font-weight: 600; color: var(--ed-text); margin: 18px 0 8px; }
+  .dock-section-title:first-of-type { margin-top: 0; }
+  .tree-mock { border: 1px solid var(--ed-border); border-radius: 6px; overflow: hidden; font-size: 0.78rem; min-width: 380px; }
+  .tree-head, .tree-row { display: grid; grid-template-columns: 1.4fr 1fr 0.7fr; }
+  .tree-head { background: var(--ed-panel-2); color: var(--ed-text-dim); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.04em; }
+  .tree-head span, .tree-row span { padding: 7px 10px; border-bottom: 1px solid var(--ed-border); }
+  .tree-row:last-child span { border-bottom: none; }
+  .tree-row span:nth-child(2), .tree-row span:nth-child(3),
+  .tree-head span:nth-child(2), .tree-head span:nth-child(3) {
+    font-family: "IBM Plex Mono", monospace; font-variant-numeric: tabular-nums; text-align: right;
+  }
+  .issue-row { display: flex; align-items: center; gap: 10px; padding: 8px 4px; border-bottom: 1px solid var(--ed-border); font-size: 0.78rem; min-width: 380px; }
+  .issue-row:last-child { border-bottom: none; }
+  .issue-row .fname { font-weight: 500; }
+  .issue-row .grow { flex: 1; min-width: 0; }
+  .issue-row .grow > div:last-child { color: var(--ed-text-dim); font-size: 0.74rem; margin-top: 1px; }
+  .unref-row { padding: 6px 4px; font-family: "IBM Plex Mono", monospace; font-size: 0.74rem; color: var(--ed-text-dim); border-bottom: 1px solid var(--ed-border); }
+  .unref-row:last-child { border-bottom: none; }
+  .total-line { display: flex; justify-content: space-between; margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--ed-border); font-size: 0.84rem; font-weight: 600; }
+  .total-line .num { font-family: "IBM Plex Mono", monospace; }
+
+  .confirm-wrap { position: relative; margin-top: 14px; }
+  .confirm-dim {
+    position: absolute; inset: -16px; background: rgba(10,10,14,0.55); border-radius: 8px;
+    display: flex; align-items: center; justify-content: center; padding: 20px;
+  }
+  .confirm-dialog { background: var(--ed-panel-2); border: 1px solid var(--ed-border); border-radius: 8px; width: 100%; max-width: 340px; box-shadow: 0 12px 40px rgba(0,0,0,0.5); }
+  .confirm-titlebar { padding: 8px 12px; font-size: 0.76rem; font-weight: 600; border-bottom: 1px solid var(--ed-border); color: var(--ed-text); }
+  .confirm-body { padding: 16px 14px; font-size: 0.8rem; color: var(--ed-text); line-height: 1.5; }
+  .confirm-body code { font-family: "IBM Plex Mono", monospace; font-size: 0.86em; color: var(--ed-blue); }
+  .confirm-actions { display: flex; justify-content: flex-end; gap: 8px; padding: 0 14px 14px; }
+
+  /* Export configuration cards */
+  .config-grid {
+    display: grid;
+    gap: 14px;
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    margin-top: 6px;
+  }
+  .config-card {
+    background: var(--page-surface);
+    border: 1px solid var(--page-border);
+    border-radius: 10px;
+    padding: 16px 18px;
+  }
+  .config-card h3 { font-size: 0.98rem; margin: 0 0 8px; }
+  .config-card p { margin: 0 0 8px; font-size: 0.9rem; color: var(--page-text-muted); }
+  .config-card p:last-child { margin-bottom: 0; }
+  .modes-list {
+    margin: 10px 0 0;
+    padding: 0;
+    list-style: none;
+    font-size: 0.88rem;
+  }
+  .modes-list li {
+    padding: 8px 0;
+    border-top: 1px solid var(--page-border);
+    display: flex;
+    gap: 10px;
+  }
+  .modes-list li:first-child { border-top: none; }
+  .modes-list .mname { font-weight: 600; flex: none; min-width: 15ch; }
+  .modes-list .mdesc { color: var(--page-text-muted); }
+  .modes-list .default-tag {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--accent-ink);
+    background: var(--accent-soft);
+    padding: 1px 6px;
+    border-radius: 4px;
+    margin-left: 6px;
+  }
+
+  /* Flow list */
+  .flow { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--page-border); }
+  .flow li { display: flex; align-items: flex-start; gap: 16px; padding: 16px 0; border-bottom: 1px solid var(--page-border); }
+  .flow-num {
+    flex: none; width: 28px; height: 28px; border-radius: 50%;
+    background: var(--accent); color: #1b0e04;
+    font-family: "IBM Plex Mono", monospace; font-weight: 700; font-size: 0.82rem;
+    display: flex; align-items: center; justify-content: center;
+    margin-top: 1px;
+  }
+  .flow .fbody { min-width: 0; }
+  .flow .flabel { font-weight: 600; margin-bottom: 3px; }
+  .flow .fdesc { color: var(--page-text-muted); font-size: 0.92rem; }
+
+  .note {
+    margin-top: 40px;
+    padding: 16px 18px;
+    background: var(--page-surface-2);
+    border: 1px solid var(--page-border);
+    border-radius: 8px;
+    font-size: 0.9rem;
+    color: var(--page-text-muted);
+  }
+  .note strong { color: var(--page-text); }
+
+  footer {
+    margin-top: 72px;
+    padding-top: 24px;
+    border-top: 1px solid var(--page-border);
+    font-size: 0.86rem;
+    color: var(--page-text-muted);
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  footer a { color: var(--accent-ink); text-decoration: none; }
+  footer a:hover { text-decoration: underline; }
+
+  @media (max-width: 720px) {
+    .editor-body { grid-template-columns: 1fr; }
+    .ed-col, .right-col { border-right: none; border-bottom: 1px solid var(--ed-border); }
+    .wrap { padding-left: 18px; padding-right: 18px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="lang-toggle" role="group" aria-label="Language / Lingua">
+    <button type="button" data-lang-btn="en">EN</button>
+    <button type="button" data-lang-btn="it">IT</button>
+  </div>
+</div>
+
+<!-- ======================= ENGLISH ======================= -->
+<div class="i18n" data-lang="en">
+<div class="wrap">
+
+  <p class="eyebrow">Web Export Optimizer</p>
+  <h1>See what's in your Web build, right in the editor</h1>
+  <p class="lede">This guide covers enabling the plugin, where its panel lives in the editor, how to read what it reports, and how to control what actually ships in a Web export.</p>
+
+  <div class="section">
+    <div class="section-head"><span class="step-badge">1</span><h2>Enabling the plugin</h2></div>
+    <p class="section-sub">In <span class="path">Project → Project Settings → Plugins</span>, find it in the list and switch it on. It stays active every time the project is opened.</p>
+
+    <div class="settings-mock">
+      <div class="settings-titlebar"><span class="dots"><span></span><span></span><span></span></span> Project Settings</div>
+      <div class="settings-body">
+        <div class="settings-tabs">
+          <span>General</span><span>Input Map</span><span>Localization</span><span>Autoload</span><span>Shader Globals</span><span class="active">Plugins</span>
+        </div>
+        <div class="plugin-row">
+          <div>
+            <div class="name">Web Export Optimizer</div>
+            <div class="meta">res://addons/webexport_optimizer/plugin.cfg — IMORI STUDIO</div>
+          </div>
+          <div class="meta">v0.1.0</div>
+          <div class="toggle"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-head"><span class="step-badge">2</span><h2>Where it lives</h2></div>
+    <p class="section-sub">The panel opens as its own tab in the <strong>lower group of the right-hand dock column</strong> — a slot that's empty by default, so it doesn't compete for space with the Inspector or the Node tab.</p>
+
+    <div class="editor-frame">
+      <div class="menubar">
+        <span class="brand">Packages</span>
+        <span>Scene</span><span>Project</span><span>Debug</span><span>Editor</span>
+        <span class="spacer"></span>
+        <div class="viewmode"><span class="active">2D</span><span>3D</span><span>Script</span><span>AssetLib</span></div>
+        <span class="spacer"></span>
+      </div>
+      <div class="editor-body">
+        <div class="ed-col">
+          <div class="ed-dock-title">FileSystem</div>
+          <div class="ed-fake-row"></div>
+          <div class="ed-fake-row"></div>
+          <div class="ed-fake-row"></div>
+          <div class="ed-fake-row"></div>
+        </div>
+        <div class="ed-viewport"></div>
+        <div class="ed-col right-col" style="padding:0;">
+          <div class="right-top">
+            <div class="tabstrip"><span class="active">Inspector</span><span>Node</span><span>History</span></div>
+            <div class="ed-fake-row"></div>
+            <div class="ed-fake-row"></div>
+            <div class="ed-fake-row"></div>
+          </div>
+          <div class="right-bottom rel">
+            <div class="tabstrip"><span class="ours active">Web Export Optimizer</span></div>
+            <div class="ed-fake-row" style="width:60%;"></div>
+            <div class="ed-fake-row" style="width:85%;"></div>
+            <div class="ed-fake-row" style="width:70%;"></div>
+            <div class="highlight-ring"></div>
+            <div class="badge-2">2</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout">
+      <span class="num">→</span>
+      <p>The panel updates itself the moment a Web export finishes — nothing to click to see the first report.</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-head"><span class="step-badge">3</span><h2>Reading the panel</h2></div>
+    <p class="section-sub">Real layout, sample numbers — the panel's own interface is Italian (see the note at the end of this guide).</p>
+
+    <div class="dock-zoom">
+      <div class="dock-header"><button class="btn">Analizza ultimo export</button></div>
+      <div class="status-line">Ultima analisi: 28/08/2026 22:14</div>
+
+      <div class="dock-section-title">Ripartizione per categoria</div>
+      <div class="tree-mock">
+        <div class="tree-head"><span>Categoria</span><span>Dimensione</span><span>%</span></div>
+        <div class="tree-row"><span>Texture</span><span>812.0 KB</span><span>68.4%</span></div>
+        <div class="tree-row"><span>Scene</span><span>220.0 KB</span><span>18.5%</span></div>
+        <div class="tree-row"><span>Font</span><span>158.0 KB</span><span>13.1%</span></div>
+      </div>
+
+      <div class="dock-section-title">Texture da ottimizzare</div>
+      <div>
+        <div class="issue-row">
+          <div class="grow"><div class="fname">background_sky.png — 480.0 KB</div><div>non compressa</div></div>
+          <button class="btn primary-outline">Applica fix</button>
+        </div>
+        <div class="issue-row">
+          <div class="grow"><div class="fname">hero_atlas.png — 332.0 KB</div><div>2400x2400 px</div></div>
+        </div>
+      </div>
+
+      <div class="confirm-wrap">
+        <div class="confirm-dim">
+          <div class="confirm-dialog">
+            <div class="confirm-titlebar">Conferma</div>
+            <div class="confirm-body">Impostare la compressione <code>Lossy</code> per <code>background_sky.png</code> e reimportarla?</div>
+            <div class="confirm-actions"><button class="btn">Annulla</button><button class="btn primary-outline">OK</button></div>
+          </div>
+        </div>
+        <div style="height:120px;"></div>
+      </div>
+
+      <div class="dock-section-title" style="margin-top:14px;">Asset non referenziati</div>
+      <div><div class="unref-row">res://audio/unused_jingle.ogg</div></div>
+
+      <div class="total-line"><span>Dimensione totale stimata</span><span class="num">1.17 MB</span></div>
+    </div>
+
+    <div class="callout">
+      <span class="num">→</span>
+      <p>"Applica fix" (Apply fix) only appears on textures flagged as uncompressed. Oversized ones are reported with their resolution but left alone — resizing source art is a call only you should make.</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-head"><span class="step-badge">4</span><h2>Configuring your Web export</h2></div>
+    <p class="section-sub">The report reflects whatever the active export preset is set to include. Three things worth checking on your own preset before relying on it.</p>
+
+    <div class="config-grid">
+      <div class="config-card">
+        <h3>Set a main scene</h3>
+        <p>A Web build needs something to run when the page loads. Set one under:</p>
+        <p><span class="path">Project → Project Settings → General → Run → Main Scene</span></p>
+      </div>
+      <div class="config-card">
+        <h3>Choose what ships</h3>
+        <p>The <span class="path">Resources</span> tab of the export preset controls the file list:</p>
+        <ul class="modes-list">
+          <li><span class="mname">All resources<span class="default-tag">default</span></span><span class="mdesc">Everything in the project, matching what this plugin's report assumes.</span></li>
+          <li><span class="mname">Selected scenes</span><span class="mdesc">Only the scenes you pick, and whatever they depend on.</span></li>
+          <li><span class="mname">Selected resources</span><span class="mdesc">A hand-picked resource list and its dependencies.</span></li>
+          <li><span class="mname">All except checked</span><span class="mdesc">Everything, minus specific resources you uncheck.</span></li>
+        </ul>
+      </div>
+      <div class="config-card">
+        <h3>Keep the optimizer out of your release</h3>
+        <p>It's an editor tool — nothing in it runs at play time. Add this to the preset's exclude filter to leave it out of what ships:</p>
+        <p class="path">addons/webexport_optimizer/*</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-head"><span class="step-badge">5</span><h2>The full loop</h2></div>
+    <p class="section-sub">Six steps, always in this order — nothing runs on its own beyond the analysis itself.</p>
+
+    <ol class="flow">
+      <li><span class="flow-num">1</span><div class="fbody"><div class="flabel">Turn the plugin on</div><div class="fdesc">Project Settings → Plugins → toggle Web Export Optimizer. Once per project.</div></div></li>
+      <li><span class="flow-num">2</span><div class="fbody"><div class="flabel">Export for Web as usual</div><div class="fdesc">Project → Export… with a Web preset — exactly as you would without the plugin installed.</div></div></li>
+      <li><span class="flow-num">3</span><div class="fbody"><div class="flabel">The panel refreshes itself</div><div class="fdesc">As soon as the export finishes, the dock redraws with the new report — no button to press to see it the first time.</div></div></li>
+      <li><span class="flow-num">4</span><div class="fbody"><div class="flabel">Read the breakdown</div><div class="fdesc">Category sizes, flagged textures, and orphaned assets — all sorted heaviest first.</div></div></li>
+      <li><span class="flow-num">5</span><div class="fbody"><div class="flabel">Apply a fix, if you want one</div><div class="fdesc">Click Apply fix → a dialog spells out exactly what it will change → confirm. Nothing happens silently.</div></div></li>
+      <li><span class="flow-num">6</span><div class="fbody"><div class="flabel">Export again to check the result</div><div class="fdesc">A second Web export refreshes the panel with the new total — the loop closes without leaving the editor.</div></div></li>
+    </ol>
+  </div>
+
+  <div class="note">
+    <strong>About this guide:</strong> category names, file names and sizes shown here are examples, chosen to demonstrate how the report reads. The controls themselves (buttons, tree, confirmation dialog) are drawn to match what Godot actually renders.
+    <br><br>
+    <strong>Interface language:</strong> the panel follows Godot's own editor language (Editor Settings → Interface → Editor Language) — currently English and Italian are supported, with English as the fallback for anything else. The mockups above show Italian, since that's what this guide's screenshots were taken with; your own panel will match whatever language your editor is set to.
+  </div>
+
+  <footer>
+    <span>Web Export Optimizer — IMORI STUDIO</span>
+    <a href="https://imoristudio.com">imoristudio.com</a>
+  </footer>
+
+</div>
+</div>
+
+<!-- ========================= ITALIAN ========================= -->
+<div class="i18n" data-lang="it">
+<div class="wrap">
+
+  <p class="eyebrow">Web Export Optimizer</p>
+  <h1>Guarda cosa pesa nella tua build Web, dentro l'editor</h1>
+  <p class="lede">Questa guida spiega come attivare il plugin, dove si trova il suo pannello nell'editor, come leggere ciò che riporta, e come definire cosa finisce davvero in un export Web.</p>
+
+  <div class="section">
+    <div class="section-head"><span class="step-badge">1</span><h2>Attivazione</h2></div>
+    <p class="section-sub">In <span class="path">Project → Project Settings → Plugins</span>, trovalo nell'elenco e accendilo con l'interruttore. Resta attivo ad ogni apertura del progetto.</p>
+
+    <div class="settings-mock">
+      <div class="settings-titlebar"><span class="dots"><span></span><span></span><span></span></span> Project Settings</div>
+      <div class="settings-body">
+        <div class="settings-tabs">
+          <span>General</span><span>Input Map</span><span>Localization</span><span>Autoload</span><span>Shader Globals</span><span class="active">Plugins</span>
+        </div>
+        <div class="plugin-row">
+          <div>
+            <div class="name">Web Export Optimizer</div>
+            <div class="meta">res://addons/webexport_optimizer/plugin.cfg — IMORI STUDIO</div>
+          </div>
+          <div class="meta">v0.1.0</div>
+          <div class="toggle"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-head"><span class="step-badge">2</span><h2>Dove si trova</h2></div>
+    <p class="section-sub">Il pannello compare come scheda propria nel <strong>gruppo inferiore della colonna destra</strong> dell'editor — uno slot vuoto di default, che quindi non toglie spazio a Inspector o Nodo.</p>
+
+    <div class="editor-frame">
+      <div class="menubar">
+        <span class="brand">Packages</span>
+        <span>Scene</span><span>Project</span><span>Debug</span><span>Editor</span>
+        <span class="spacer"></span>
+        <div class="viewmode"><span class="active">2D</span><span>3D</span><span>Script</span><span>AssetLib</span></div>
+        <span class="spacer"></span>
+      </div>
+      <div class="editor-body">
+        <div class="ed-col">
+          <div class="ed-dock-title">FileSystem</div>
+          <div class="ed-fake-row"></div>
+          <div class="ed-fake-row"></div>
+          <div class="ed-fake-row"></div>
+          <div class="ed-fake-row"></div>
+        </div>
+        <div class="ed-viewport"></div>
+        <div class="ed-col right-col" style="padding:0;">
+          <div class="right-top">
+            <div class="tabstrip"><span class="active">Inspector</span><span>Node</span><span>History</span></div>
+            <div class="ed-fake-row"></div>
+            <div class="ed-fake-row"></div>
+            <div class="ed-fake-row"></div>
+          </div>
+          <div class="right-bottom rel">
+            <div class="tabstrip"><span class="ours active">Web Export Optimizer</span></div>
+            <div class="ed-fake-row" style="width:60%;"></div>
+            <div class="ed-fake-row" style="width:85%;"></div>
+            <div class="ed-fake-row" style="width:70%;"></div>
+            <div class="highlight-ring"></div>
+            <div class="badge-2">2</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout">
+      <span class="num">→</span>
+      <p>Il pannello si aggiorna da solo appena finisce un export Web — nessun click necessario per vedere il primo report.</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-head"><span class="step-badge">3</span><h2>Come si legge il pannello</h2></div>
+    <p class="section-sub">Struttura reale, numeri d'esempio.</p>
+
+    <div class="dock-zoom">
+      <div class="dock-header"><button class="btn">Analizza ultimo export</button></div>
+      <div class="status-line">Ultima analisi: 28/08/2026 22:14</div>
+
+      <div class="dock-section-title">Ripartizione per categoria</div>
+      <div class="tree-mock">
+        <div class="tree-head"><span>Categoria</span><span>Dimensione</span><span>%</span></div>
+        <div class="tree-row"><span>Texture</span><span>812.0 KB</span><span>68.4%</span></div>
+        <div class="tree-row"><span>Scene</span><span>220.0 KB</span><span>18.5%</span></div>
+        <div class="tree-row"><span>Font</span><span>158.0 KB</span><span>13.1%</span></div>
+      </div>
+
+      <div class="dock-section-title">Texture da ottimizzare</div>
+      <div>
+        <div class="issue-row">
+          <div class="grow"><div class="fname">background_sky.png — 480.0 KB</div><div>non compressa</div></div>
+          <button class="btn primary-outline">Applica fix</button>
+        </div>
+        <div class="issue-row">
+          <div class="grow"><div class="fname">hero_atlas.png — 332.0 KB</div><div>2400x2400 px</div></div>
+        </div>
+      </div>
+
+      <div class="confirm-wrap">
+        <div class="confirm-dim">
+          <div class="confirm-dialog">
+            <div class="confirm-titlebar">Conferma</div>
+            <div class="confirm-body">Impostare la compressione <code>Lossy</code> per <code>background_sky.png</code> e reimportarla?</div>
+            <div class="confirm-actions"><button class="btn">Annulla</button><button class="btn primary-outline">OK</button></div>
+          </div>
+        </div>
+        <div style="height:120px;"></div>
+      </div>
+
+      <div class="dock-section-title" style="margin-top:14px;">Asset non referenziati</div>
+      <div><div class="unref-row">res://audio/unused_jingle.ogg</div></div>
+
+      <div class="total-line"><span>Dimensione totale stimata</span><span class="num">1.17 MB</span></div>
+    </div>
+
+    <div class="callout">
+      <span class="num">→</span>
+      <p>Il bottone "Applica fix" compare solo sulle texture segnalate come non compresse. Quelle sovradimensionate vengono riportate con la loro risoluzione ma lasciate intatte — ridimensionare l'immagine sorgente è una scelta che spetta a te.</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-head"><span class="step-badge">4</span><h2>Configurare l'export Web</h2></div>
+    <p class="section-sub">Il report riflette esattamente ciò che il preset di export attivo include. Tre cose da controllare sul proprio preset prima di fidarsi del risultato.</p>
+
+    <div class="config-grid">
+      <div class="config-card">
+        <h3>Imposta una scena principale</h3>
+        <p>Una build Web ha bisogno di qualcosa da avviare al caricamento della pagina. Si imposta in:</p>
+        <p><span class="path">Project → Project Settings → General → Run → Main Scene</span></p>
+      </div>
+      <div class="config-card">
+        <h3>Scegli cosa parte</h3>
+        <p>La scheda <span class="path">Resources</span> del preset di export controlla l'elenco file:</p>
+        <ul class="modes-list">
+          <li><span class="mname">Tutte le risorse<span class="default-tag">default</span></span><span class="mdesc">Tutto il progetto — è ciò che il report di questo plugin assume.</span></li>
+          <li><span class="mname">Scene selezionate</span><span class="mdesc">Solo le scene scelte e ciò da cui dipendono.</span></li>
+          <li><span class="mname">Risorse selezionate</span><span class="mdesc">Un elenco di risorse scelte a mano e le loro dipendenze.</span></li>
+          <li><span class="mname">Tutto tranne le spuntate</span><span class="mdesc">Tutto il progetto, meno le risorse che deselezioni.</span></li>
+        </ul>
+      </div>
+      <div class="config-card">
+        <h3>Tieni l'optimizer fuori dalla build finale</h3>
+        <p>È uno strumento da editor — non serve a runtime. Aggiungi questo al filtro di esclusione del preset per lasciarlo fuori:</p>
+        <p class="path">addons/webexport_optimizer/*</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-head"><span class="step-badge">5</span><h2>Il ciclo completo</h2></div>
+    <p class="section-sub">Sei passaggi, sempre nello stesso ordine — nessuno automatico oltre l'analisi stessa.</p>
+
+    <ol class="flow">
+      <li><span class="flow-num">1</span><div class="fbody"><div class="flabel">Attiva il plugin</div><div class="fdesc">Project Settings → Plugins → interruttore su Web Export Optimizer. Una volta sola per progetto.</div></div></li>
+      <li><span class="flow-num">2</span><div class="fbody"><div class="flabel">Esporta per Web come sempre</div><div class="fdesc">Project → Export… con un preset Web, esattamente come faresti senza il plugin installato.</div></div></li>
+      <li><span class="flow-num">3</span><div class="fbody"><div class="flabel">Il pannello si aggiorna da solo</div><div class="fdesc">A export completato il dock si ridisegna in automatico — nessun bottone da premere per vedere i risultati la prima volta.</div></div></li>
+      <li><span class="flow-num">4</span><div class="fbody"><div class="flabel">Leggi il riepilogo</div><div class="fdesc">Dimensioni per categoria, texture problematiche, asset orfani: tutto già ordinato dal più pesante.</div></div></li>
+      <li><span class="flow-num">5</span><div class="fbody"><div class="flabel">Applica una fix, se vuoi</div><div class="fdesc">Click su Applica fix → una finestra spiega per intero cosa sta per cambiare → conferma. Mai un'azione silenziosa.</div></div></li>
+      <li><span class="flow-num">6</span><div class="fbody"><div class="flabel">Riesporta per verificare</div><div class="fdesc">Un secondo export Web aggiorna il pannello con il nuovo totale: il ciclo si chiude senza uscire dall'editor.</div></div></li>
+    </ol>
+  </div>
+
+  <div class="note">
+    <strong>Su questa guida:</strong> nomi di categorie, file e dimensioni mostrati qui sono di esempio, scelti per mostrare come si legge il report. I controlli (bottoni, albero, finestra di conferma) sono disegnati per corrispondere a ciò che Godot renderizza davvero.
+    <br><br>
+    <strong>Lingua dell'interfaccia:</strong> il pannello segue la lingua dell'editor Godot (Editor Settings → Interface → Editor Language) — al momento sono supportati inglese e italiano, con l'inglese come lingua di riserva per tutte le altre. Le immagini qui sopra mostrano l'italiano perché è la lingua con cui sono state fatte le catture; il tuo pannello mostrerà quella impostata nel tuo editor.
+  </div>
+
+  <footer>
+    <span>Web Export Optimizer — IMORI STUDIO</span>
+    <a href="https://imoristudio.com">imoristudio.com</a>
+  </footer>
+
+</div>
+</div>
+
+<script>
+(function () {
+  function getLang() {
+    try {
+      var saved = localStorage.getItem('weo-docs-lang');
+      if (saved === 'en' || saved === 'it') return saved;
+    } catch (e) {}
+    return (navigator.language || '').toLowerCase().indexOf('it') === 0 ? 'it' : 'en';
+  }
+  function setLang(lang) {
+    document.querySelectorAll('.i18n').forEach(function (el) {
+      el.hidden = el.getAttribute('data-lang') !== lang;
+    });
+    document.querySelectorAll('[data-lang-btn]').forEach(function (btn) {
+      var isActive = btn.getAttribute('data-lang-btn') === lang;
+      btn.classList.toggle('active', isActive);
+      btn.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+    });
+    try { document.documentElement.setAttribute('lang', lang); } catch (e) {}
+    try { localStorage.setItem('weo-docs-lang', lang); } catch (e) {}
+  }
+  document.querySelectorAll('[data-lang-btn]').forEach(function (btn) {
+    btn.addEventListener('click', function () { setLang(btn.getAttribute('data-lang-btn')); });
+  });
+  setLang(getLang());
+})();
+</script>
+
+</body>
+</html>
