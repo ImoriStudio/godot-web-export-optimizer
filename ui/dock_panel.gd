@@ -65,8 +65,15 @@ func _build_ui() -> void:
 	spacer.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	header.add_child(spacer)
 
+	## flat=true replica lo stile delle icone toolbar native dell'editor
+	## (es. FileSystem dock): riquadro visibile solo in hover/pressed, non un
+	## bottone bordato sempre visibile come "Attiva"/"Sfoglia"/"Salva".
 	var settings_button := Button.new()
 	settings_button.icon = get_theme_icon("Tools", "EditorIcons")
+	settings_button.icon_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	settings_button.vertical_icon_alignment = VERTICAL_ALIGNMENT_CENTER
+	settings_button.custom_minimum_size = Vector2(28, 28)
+	settings_button.flat = true
 	settings_button.tooltip_text = WebOptLocalization.t("settings_button_tooltip")
 	settings_button.pressed.connect(_on_settings_pressed)
 	header.add_child(settings_button)
